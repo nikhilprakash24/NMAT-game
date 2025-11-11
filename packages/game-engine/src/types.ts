@@ -62,6 +62,12 @@ export enum DecisionSource {
   AUTO = 'auto',
 }
 
+export enum TimerMode {
+  TIMED = 'timed',           // Fixed time limit
+  ALL_SUBMIT = 'all_submit', // Wait for all players to submit
+  FLEXIBLE = 'flexible',      // Ends when all submit OR time expires
+}
+
 // ============================================================================
 // Basic Interfaces
 // ============================================================================
@@ -137,7 +143,8 @@ export interface CustomRule {
 
 export interface GameConfig {
   numberOfRounds: number;
-  roundDuration: number;
+  roundDuration: number;      // In seconds (0 = no timer)
+  timerMode: TimerMode;        // How timer behaves
   categories: Category[];
   customRules: CustomRule[];
   allowLateJoin: boolean;

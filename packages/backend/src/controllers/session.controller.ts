@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { sessionManager } from '../services/SessionManager';
-import { BUILTIN_CATEGORIES, DEFAULT_POINT_SYSTEM } from '@nmat/game-engine';
+import { BUILTIN_CATEGORIES, DEFAULT_POINT_SYSTEM, TimerMode } from '@nmat/game-engine';
 import { AppError } from '../middleware/error.middleware';
 import logger from '../utils/logger';
 
@@ -16,6 +16,7 @@ router.post('/', async (req: Request, res: Response) => {
     const {
       numberOfRounds = 3,
       roundDuration = 60,
+      timerMode = TimerMode.FLEXIBLE,  // Default: flexible timer
       categories = BUILTIN_CATEGORIES.slice(0, 4),
       customRules = [],
       allowLateJoin = false,
@@ -27,6 +28,7 @@ router.post('/', async (req: Request, res: Response) => {
     const session = sessionManager.createSession(hostId, {
       numberOfRounds,
       roundDuration,
+      timerMode,
       categories,
       customRules,
       allowLateJoin,
