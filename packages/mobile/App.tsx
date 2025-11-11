@@ -1,7 +1,24 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider } from 'react-redux';
+import { store } from './src/store';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { useSocket } from './src/hooks/useSocket';
+
+/**
+ * App Content with Socket.io integration
+ */
+function AppContent() {
+  useSocket(); // Initialize socket connection and event listeners
+
+  return (
+    <>
+      <RootNavigator />
+      <StatusBar style="dark" />
+    </>
+  );
+}
 
 /**
  * Main App Component
@@ -9,9 +26,10 @@ import { RootNavigator } from './src/navigation/RootNavigator';
  */
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <RootNavigator />
-      <StatusBar style="dark" />
-    </SafeAreaProvider>
+    <Provider store={store}>
+      <SafeAreaProvider>
+        <AppContent />
+      </SafeAreaProvider>
+    </Provider>
   );
 }
