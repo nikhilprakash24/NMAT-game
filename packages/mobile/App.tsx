@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { store } from './src/store';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { useSocket } from './src/hooks/useSocket';
+import { ErrorBoundary, ConnectionStatus } from './src/components';
 
 /**
  * App Content with Socket.io integration
@@ -15,6 +16,7 @@ function AppContent() {
   return (
     <>
       <RootNavigator />
+      <ConnectionStatus />
       <StatusBar style="dark" />
     </>
   );
@@ -26,10 +28,12 @@ function AppContent() {
  */
 export default function App() {
   return (
-    <Provider store={store}>
-      <SafeAreaProvider>
-        <AppContent />
-      </SafeAreaProvider>
-    </Provider>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <SafeAreaProvider>
+          <AppContent />
+        </SafeAreaProvider>
+      </Provider>
+    </ErrorBoundary>
   );
 }

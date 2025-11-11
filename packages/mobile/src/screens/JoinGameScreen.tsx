@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { HandwrittenText, Button, Card, LinedInput } from '../components';
+import { HandwrittenText, Button, Card, LinedInput, Loading, NetworkError } from '../components';
 import { colors, spacing } from '../theme';
 import { socketService } from '../services/socket.service';
 import { useAppSelector, useAppDispatch } from '../store';
@@ -25,6 +25,11 @@ const JoinGameScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     try {
       // Get session by code first
       const response = await fetch(`http://localhost:3000/api/sessions/code/${code}`);
+
+      if (!response.ok) {
+        throw new Error('Game not found');
+      }
+
       const data = await response.json();
 
       if (data.status === 'success') {
@@ -37,10 +42,11 @@ const JoinGameScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           sessionId: data.data.id,
         });
       } else {
-        setError('Game not found');
+        setError('Game not found. Please check the code.');
       }
     } catch (err) {
-      setError('Failed to join game');
+      setError('Failed to join game. Please check your connection and try again.');
+      console.error('Join game error:', err);
     } finally {
       setLoading(false);
     }

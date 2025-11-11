@@ -5,7 +5,7 @@ import {
   ScrollView,
   Switch,
 } from 'react-native';
-import { HandwrittenText, Button, Card, LinedInput } from '../components';
+import { HandwrittenText, Button, Card, LinedInput, Loading, NetworkError } from '../components';
 import { colors, spacing } from '../theme';
 import { BUILTIN_CATEGORIES, TimerMode } from '@nmat/game-engine';
 
@@ -25,17 +25,38 @@ const CreateGameScreen: React.FC<CreateGameScreenProps> = ({ navigation }) => {
     BUILTIN_CATEGORIES.slice(0, 4).map(c => c.id)
   );
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleCreateGame = async () => {
+    // Validation
+    if (selectedCategories.length === 0) {
+      setError('Please select at least one category');
+      return;
+    }
+
+    const rounds = parseInt(numberOfRounds);
+    const duration = parseInt(roundDuration);
+
+    if (isNaN(rounds) || rounds < 1 || rounds > 20) {
+      setError('Rounds must be between 1 and 20');
+      return;
+    }
+
+    if (isNaN(duration) || duration < 10 || duration > 300) {
+      setError('Duration must be between 10 and 300 seconds');
+      return;
+    }
+
     setLoading(true);
+    setError('');
 
     try {
       const response = await fetch('http://localhost:3000/api/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          numberOfRounds: parseInt(numberOfRounds),
-          roundDuration: parseInt(roundDuration),
+          numberOfRounds: rounds,
+          roundDuration: duration,
           timerMode,
           categories: BUILTIN_CATEGORIES.filter(c => selectedCategories.includes(c.id)),
           customRules: [],
@@ -44,6 +65,10 @@ const CreateGameScreen: React.FC<CreateGameScreenProps> = ({ navigation }) => {
         }),
       });
 
+      if (!response.ok) {
+        throw new Error('Failed to create game');
+      }
+
       const data = await response.json();
 
       if (data.status === 'success') {
@@ -51,8 +76,11 @@ const CreateGameScreen: React.FC<CreateGameScreenProps> = ({ navigation }) => {
           sessionCode: data.data.code,
           sessionId: data.data.sessionId,
         });
+      } else {
+        setError('Failed to create game. Please try again.');
       }
     } catch (error) {
+      setError('Failed to create game. Please check your connection and try again.');
       console.error('Failed to create game:', error);
     } finally {
       setLoading(false);
@@ -113,6 +141,14 @@ const CreateGameScreen: React.FC<CreateGameScreenProps> = ({ navigation }) => {
           </View>
         ))}
       </Card>
+
+      {error ? (
+        <Card color="pink" style={styles.section}>
+          <HandwrittenText variant="handwritten" size="md" color={colors.error} center>
+            {error}
+          </HandwrittenText>
+        </Card>
+      ) : null}
 
       <Button
         onPress={handleCreateGame}
