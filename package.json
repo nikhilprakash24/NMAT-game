@@ -1,0 +1,36 @@
+{
+  "name": "nmat-game",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Networked Name-Place-Animal-Thing Mobile Game",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "setup": "npm install && npm run build:engine",
+    "build:engine": "cd packages/game-engine && npm run build",
+    "build:backend": "cd packages/backend && npm run build",
+    "build:mobile": "cd packages/mobile && npm run build",
+    "build": "npm run build:engine && npm run build:backend",
+    "dev:backend": "cd packages/backend && npm run dev",
+    "dev:mobile": "cd packages/mobile && npm start",
+    "test": "npm run test --workspaces",
+    "test:engine": "cd packages/game-engine && npm test",
+    "test:backend": "cd packages/backend && npm test",
+    "test:mobile": "cd packages/mobile && npm test",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\""
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
